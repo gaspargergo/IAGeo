@@ -44,7 +44,9 @@
       font-size: 14px;
       letter-spacing: 1px;
       font-family: Shrikhand, cursive;
-      color: red;
+      background: -webkit-linear-gradient(left, #d646b2 0%,#38a8c4 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
       margin-left: 300px;
       margin-top: -20px;
       transform: rotate(-20deg);
@@ -87,12 +89,12 @@
 
 <body>
   <center><a id="title" onClick="ordered()">instant ART</a>
-    <a onClick="lines()"><p id="text">Lines!(of shapes)</p></a>
+    <a onClick="gradientShapes()"><p id="text">Now with gradience too!</p></a>
 
   <div id="container"><canvas id="canvas" height="600px" width="600px"></canvas></div>
   <div id="sizeMenu">
     <a onClick="changePixelSize('-')" class="plusminus">-</a>
-    <span id="sizeNumber"><a onClick="toggleSpin()">100</a></span>
+    <span id="sizeNumber">100</span>
     <a onClick="changePixelSize('+')" class="plusminus">+</a>
   </div>
 
@@ -116,67 +118,66 @@
   var pixelArrayCounter = 4;
   var size = c.height/(Math.sqrt(sizes[pixelArrayCounter]));
 
-  function lines(){
-    ctx.clearRect(0, 0, c.width, c.height);
-    if(Math.floor(Math.random() * 11) == 10){
-      ctx.fillStyle = '#'+ Math.random().toString(16).slice(-6);
-      ctx.fillRect(0, 0, c.width, c.height);
-    }
-    var random = Math.floor(Math.random() * 2);
+  function getRandomGradient(gradientSize){
+    var grd;
+    var random = Math.floor(Math.random() * 4);
     switch(random){
       case 0:
-        while(y < 600){
-          ctx.fillStyle = '#'+ Math.random().toString(16).slice(-6);
-          while(x < 600){
-            var random = Math.floor(Math.random() * 3);
-            switch(random){
-              case 0:
-                  drawSquare(x,y,size);
-                break;
-              case 1:
-                  drawTriangle(x,y,size);
-                break;
-              case 2:
-                  drawCircle(x,y,size);
-                break;
-            }
-            x += Math.floor(Math.random() * (size-(size/10))) + size/10;
-          }
-          y += size;
-          x = 0;
-        }
+          grd=ctx.createLinearGradient(x,y,x+gradientSize,y+gradientSize);
         break;
       case 1:
-        while(x < 600){
-          ctx.fillStyle = '#'+ Math.random().toString(16).slice(-6);
-          while(y < 600){
-            var random = Math.floor(Math.random() * 3);
-            switch(random){
-              case 0:
-                  drawSquare(x,y,size);
-                break;
-              case 1:
-                  drawTriangle(x,y,size);
-                break;
-              case 2:
-                  drawCircle(x,y,size);
-                break;
-            }
-            y += Math.floor(Math.random() * (size-(size/10))) + size/10;
-          }
-          x += size;
-          y = 0;
-        }
+          grd=ctx.createLinearGradient(x+gradientSize/2,y,x+gradientSize/2,y+gradientSize);
         break;
+      case 2:
+          grd=ctx.createLinearGradient(x+gradientSize,y,x,y+gradientSize);
+        break;
+      case 3:
+          grd=ctx.createLinearGradient(x,y+gradientSize/2,x+gradientSize,y+gradientSize/2);
+        break;
+    }
+      grd.addColorStop(0,'#'+ Math.random().toString(16).slice(-6));
+      grd.addColorStop(1,'#'+ Math.random().toString(16).slice(-6));
+
+    return grd;
+  }
+
+
+  function gradientShapes(){
+    var gradient = getRandomGradient(c.width);
+
+    ctx.clearRect(0, 0, c.width, c.height);
+
+    while(x < 600){
+      while(y < 600){
+        ctx.fillStyle = gradient;
+
+        var random = Math.floor(Math.random() * 3);
+        switch(random){
+          case 0:
+              drawSquare(x,y,size);
+            break;
+          case 1:
+              drawTriangle(x,y,size);
+            break;
+          case 2:
+              drawCircle(x,y,size);
+            break;
+        }
+        y += size;
+      }
+      x += size;
+      y = 0;
     }
     x = 0;
     y = 0;
   }
+  
+
 
   function ordered(){
     ctx.clearRect(0, 0, c.width, c.height);
-    if(Math.floor(Math.random() * 11) == 10){
-      ctx.fillStyle = '#'+ Math.random().toString(16).slice(-6);
+    if(Math.floor(Math.random() * 11) == 10){ //gradient background sometimes
+      ctx.fillStyle = getRandomGradient(c.width);
       ctx.fillRect(0, 0, c.width, c.height);
     }
     while(x < 600){
